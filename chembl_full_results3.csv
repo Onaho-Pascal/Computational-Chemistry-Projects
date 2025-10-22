@@ -1,0 +1,74 @@
+molecule_chembl_id,molecule_type,pref_name,standard_type,standard_units,standard_value,target_chembl_id,target_pref_name,type,units,value
+CHEMBL1438518,Small molecule,,Potency,nM,31622.8,CHEMBL1293254,Ferritin light chain,Potency,um,31.6228
+CHEMBL1438518,Small molecule,,Potency,nM,125.9,CHEMBL1293238,Inositol monophosphatase 1,Potency,um,0.1259
+CHEMBL1438518,Small molecule,,Potency,nM,5623.4,CHEMBL5501,Histone acetyltransferase KAT2A,Potency,uM,5.6234
+CHEMBL1438518,Small molecule,,Potency,nM,3981.1,CHEMBL3885594,Importin subunit beta-1/Snurportin-1,Potency,uM,3.9811
+CHEMBL1438518,Small molecule,,Potency,nM,28183.8,CHEMBL6035,"Thioredoxin reductase 1, cytoplasmic",Potency,uM,28.1838
+CHEMBL1438518,Small molecule,,Potency,nM,3696.4,CHEMBL364,Plasmodium falciparum,Potency,uM,3.6964
+CHEMBL1438518,Small molecule,,Potency,nM,37933.0,CHEMBL5567,Luciferin 4-monooxygenase,Potency,uM,37.933
+CHEMBL1438518,Small molecule,,Potency,nM,39810.7,CHEMBL612545,Unchecked,Potency,uM,39.8107
+CHEMBL1510231,Small molecule,,Potency,nM,1299.5,CHEMBL612545,Unchecked,Potency,um,1.2995
+CHEMBL1510231,Small molecule,,Potency,nM,50118.7,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,50.1187
+CHEMBL1510231,Small molecule,,Potency,nM,28183.8,CHEMBL6035,"Thioredoxin reductase 1, cytoplasmic",Potency,uM,28.1838
+CHEMBL1510231,Small molecule,,Potency,nM,100000.0,CHEMBL1741193,Chromobox protein homolog 1,Potency,uM,100.0
+CHEMBL1510231,Small molecule,,Potency,nM,22387.2,CHEMBL612545,Unchecked,Potency,uM,22.3872
+CHEMBL1548793,Small molecule,,Potency,nM,35481.3,CHEMBL1293232,Survival motor neuron protein,Potency,um,35.4813
+CHEMBL1548793,Small molecule,,Potency,nM,29092.9,CHEMBL612545,Unchecked,Potency,um,29.0929
+CHEMBL1548793,Small molecule,,Potency,nM,562.3,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,0.5623
+CHEMBL1548793,Small molecule,,Potency,nM,631.0,CHEMBL2026,Beta-lactamase,Potency,um,0.631
+CHEMBL1548793,Small molecule,,Potency,nM,6513.1,CHEMBL1741209,ATPase family AAA domain-containing protein 5,Potency,uM,6.5131
+CHEMBL1548793,Small molecule,,Potency,nM,141253.8,CHEMBL3885594,Importin subunit beta-1/Snurportin-1,Potency,uM,141.2538
+CHEMBL1548793,Small molecule,,Potency,nM,17782.8,CHEMBL395,HepG2,Potency,uM,17.7828
+CHEMBL1548793,Small molecule,,Potency,nM,5623.4,CHEMBL612545,Unchecked,Potency,uM,5.6234
+CHEMBL1579620,Small molecule,,Potency,nM,562.3,CHEMBL5514,Huntingtin,Potency,um,0.5623
+CHEMBL1579620,Small molecule,,Potency,nM,39810.7,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,39.8107
+CHEMBL1579620,Small molecule,,Potency,nM,70794.6,CHEMBL4096,Cellular tumor antigen p53,Potency,uM,70.7946
+CHEMBL1579620,Small molecule,,Potency,nM,29092.9,CHEMBL1741209,ATPase family AAA domain-containing protein 5,Potency,uM,29.0929
+CHEMBL1579620,Small molecule,,Potency,nM,65.7,CHEMBL364,Plasmodium falciparum,Potency,uM,0.0657
+CHEMBL1579620,Small molecule,,Potency,nM,19952.6,CHEMBL6035,"Thioredoxin reductase 1, cytoplasmic",Potency,uM,19.9526
+CHEMBL1579620,Small molecule,,Potency,nM,21331.3,CHEMBL5567,Luciferin 4-monooxygenase,Potency,uM,21.3313
+CHEMBL1579620,Small molecule,,Potency,nM,35481.3,CHEMBL2362981,TAR DNA-binding protein 43,Potency,uM,35.4813
+CHEMBL1579620,Small molecule,,Potency,nM,31622.8,CHEMBL1293317,Muscleblind-like protein 1,Potency,uM,31.6228
+CHEMBL1506186,Small molecule,,Potency,nM,39810.7,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,39.8107
+CHEMBL1506186,Small molecule,,Potency,nM,89125.1,CHEMBL6032,Histone-lysine N-methyltransferase EHMT2,Potency,uM,89.1251
+CHEMBL1506186,Small molecule,,Potency,nM,32642.7,CHEMBL1741209,ATPase family AAA domain-containing protein 5,Potency,uM,32.6427
+CHEMBL1506186,Small molecule,,Potency,nM,207.9,CHEMBL364,Plasmodium falciparum,Potency,uM,0.2079
+CHEMBL1506186,Small molecule,,Potency,nM,35481.3,CHEMBL6035,"Thioredoxin reductase 1, cytoplasmic",Potency,uM,35.4813
+CHEMBL1506186,Small molecule,,Potency,nM,13115.4,CHEMBL364,Plasmodium falciparum,Potency,uM,13.1154
+CHEMBL1506186,Small molecule,,Potency,nM,10000.0,CHEMBL4377,Guanine nucleotide-binding protein G(s) subunit alpha isoforms short,Potency,uM,10.0
+CHEMBL1574421,Small molecule,,Potency,nM,35481.3,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,35.4813
+CHEMBL1574421,Small molecule,,Potency,nM,50118.7,CHEMBL1293254,Ferritin light chain,Potency,um,50.1187
+CHEMBL1574421,Small molecule,,Potency,nM,5623.4,CHEMBL2026,Beta-lactamase,Potency,um,5.6234
+CHEMBL1574421,Small molecule,,Potency,nM,3162.3,CHEMBL2179,Lysosomal acid glucosylceramidase,Potency,uM,3.1623
+CHEMBL1574421,Small molecule,,Potency,nM,89125.1,CHEMBL5896,Lysine-specific demethylase 4A,Potency,uM,89.1251
+CHEMBL1574421,Small molecule,,Potency,nM,44668.4,CHEMBL6032,Histone-lysine N-methyltransferase EHMT2,Potency,uM,44.6684
+CHEMBL1574421,Small molecule,,Potency,nM,3696.4,CHEMBL364,Plasmodium falciparum,Potency,uM,3.6964
+CHEMBL1574421,Small molecule,,Potency,nM,39810.7,CHEMBL1741193,Chromobox protein homolog 1,Potency,uM,39.8107
+CHEMBL1574421,Small molecule,,Potency,nM,56234.1,CHEMBL6035,"Thioredoxin reductase 1, cytoplasmic",Potency,uM,56.2341
+CHEMBL1574421,Small molecule,,Potency,nM,50118.7,CHEMBL4377,Guanine nucleotide-binding protein G(s) subunit alpha isoforms short,Potency,uM,50.1187
+CHEMBL1574421,Small molecule,,Potency,nM,75686.3,CHEMBL2288,Peptidyl-prolyl cis-trans isomerase NIMA-interacting 1,Potency,uM,75.6863
+CHEMBL1574421,Small molecule,,Potency,nM,12589.3,CHEMBL612545,Unchecked,Potency,uM,12.5893
+CHEMBL1574421,Small molecule,,Potency,nM,17782.8,CHEMBL4377,Guanine nucleotide-binding protein G(s) subunit alpha isoforms short,Potency,uM,17.7828
+CHEMBL1532948,Small molecule,,Potency,nM,6309.6,CHEMBL1963,Thyrotropin receptor,Potency,um,6.3096
+CHEMBL1532948,Small molecule,,Potency,nM,44668.4,CHEMBL3577,Aldehyde dehydrogenase 1A1,Potency,um,44.6684
+CHEMBL1532948,Small molecule,,Potency,nM,44668.4,CHEMBL6110,Thioredoxin glutathione reductase,Potency,um,44.6684
+CHEMBL1532948,Small molecule,,Potency,nM,14125.4,CHEMBL1293303,Nonstructural protein 1,Potency,um,14.1254
+CHEMBL1532948,Small molecule,,Potency,nM,631.0,CHEMBL2026,Beta-lactamase,Potency,um,0.631
+CHEMBL1532948,Small molecule,,Potency,nM,6309.6,CHEMBL1963,Thyrotropin receptor,Potency,um,6.3096
+CHEMBL1532948,Small molecule,,Potency,nM,3294.4,CHEMBL364,Plasmodium falciparum,Potency,uM,3.2944
+CHEMBL1532948,Small molecule,,Potency,nM,10000.0,CHEMBL4377,Guanine nucleotide-binding protein G(s) subunit alpha isoforms short,Potency,uM,10.0
+CHEMBL1527904,Small molecule,,Potency,nM,39810.7,CHEMBL3563,Cruzipain,Potency,um,39.8107
+CHEMBL1527904,Small molecule,,Potency,nM,28183.8,CHEMBL6032,Histone-lysine N-methyltransferase EHMT2,Potency,uM,28.1838
+CHEMBL1527904,Small molecule,,Potency,nM,100000.0,CHEMBL1741193,Chromobox protein homolog 1,Potency,uM,100.0
+CHEMBL1527904,Small molecule,,Potency,nM,35.5,CHEMBL1795085,Ataxin-2,Potency,uM,0.0355
+CHEMBL1527904,Small molecule,,Potency,nM,11220.2,CHEMBL4377,Guanine nucleotide-binding protein G(s) subunit alpha isoforms short,Potency,uM,11.2202
+CHEMBL3771068,Small molecule,,IC50,nM,86.3,CHEMBL2039,Amine oxidase [flavin-containing] B,IC50,nM,86.3
+CHEMBL3771068,Small molecule,,Inhibition,%,32.3,CHEMBL1951,Amine oxidase [flavin-containing] A,INH,%,32.3
+CHEMBL3771068,Small molecule,,Ratio IC50,,1159.0,CHEMBL612545,Unchecked,Ratio IC50,,1159.0
+CHEMBL1594441,Small molecule,,Potency,nM,50118.7,CHEMBL1293299,Histone-lysine N-methyltransferase 2A,Potency,um,50.1187
+CHEMBL1594441,Small molecule,,Potency,nM,10000.0,CHEMBL395,HepG2,Potency,uM,10.0
+CHEMBL1594441,Small molecule,,Potency,nM,7079.5,CHEMBL2146309,ATP-dependent Clp protease proteolytic subunit,Potency,uM,7.0795
+CHEMBL1499492,Small molecule,,Potency,nM,39810.7,CHEMBL3577,Aldehyde dehydrogenase 1A1,Potency,um,39.8107
+CHEMBL1499492,Small molecule,,Potency,nM,5011.9,CHEMBL2026,Beta-lactamase,Potency,um,5.0119
+CHEMBL1499492,Small molecule,,Potency,nM,89125.1,CHEMBL6032,Histone-lysine N-methyltransferase EHMT2,Potency,uM,89.1251
+CHEMBL1499492,Small molecule,,Potency,nM,2.9,CHEMBL364,Plasmodium falciparum,Potency,uM,0.0029

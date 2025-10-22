@@ -1,0 +1,113 @@
+from rdkit import Chem
+from chembl_webresource_client.new_client import new_client
+import pandas as pd
+import requests
+import os
+from tqdm import tqdm
+
+# ===============================
+# CONFIGURATION
+# ===============================
+sdf_file = "FPS_7U_657041 (3).sdf"
+IMAGE_DIR = "compound_images"
+OUT_FILE = "multi_db_results.csv"
+os.makedirs(IMAGE_DIR, exist_ok=True)
+
+# Extract SMILES
+supplier = Chem.SDMolSupplier(sdf_file)
+query_smiles = None
+for mol in supplier:
+    if mol is not None:
+        query_smiles = Chem.MolToSmiles(mol, canonical=True)
+        break
+print(f"✅ Query SMILES: {query_smiles}")
+
+
+# ==================================================
+# 1️⃣ ChEMBL SEARCH
+# ==================================================
+print("\n🔍 Searching ChEMBL for similar and substructure compounds...")
+similarity_search = new_client.similarity
+substructure_search = new_client.substructure
+
+similar_hits = similarity_search.filter(smiles=query_smiles, similarity=40) #.only(
+    #["molecule_chembl_id", "pref_name", "molecule_type", "canonical_smiles"]
+
+substructure_hits = substructure_search.filter(smiles=query_smiles) 
+#     ["molecule_chembl_id", "pref_name", "molecule_type", "canonical_smiles"]
+
+chembl_results = list(similar_hits) + list(substructure_hits)
+
+chembl_df = pd.DataFrame(chembl_results).drop_duplicates(subset=["molecule_chembl_id"])
+chembl_df["source"] = "ChEMBL"
+print(f"✅ Retrieved {len(chembl_df)} unique compounds from ChEMBL.")
+print(chembl_df.head(10))
+print(chembl_df.columns)
+print(chembl_df.shape)
+
+
+# ==================================================
+# 2️⃣ PubChem SEARCH
+# ==================================================
+print("\n🧪 Searching PubChem for similar compounds...")
+pubchem_df = pd.DataFrame()
+
+try:
+    # Step 1: Get list of similar compounds by SMILES
+    sim_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/similarity/smiles/{query_smiles}/cids/JSON?Threshold=70"
+    r = requests.get(sim_url, timeout=30)
+    r.raise_for_status()
+    data = r.json()
+
+    cids = data.get("IdentifierList", {}).get("CID", [])
+    print(f"Found {len(cids)} PubChem CIDs")
+
+    # Step 2: Fetch their SMILES
+    smiles_list = []
+    for cid in tqdm(cids[:50], desc="Fetching PubChem structures"):
+        s_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/CanonicalSMILES,Title/JSON"
+        resp = requests.get(s_url, timeout=10)
+        if resp.status_code == 200:
+            props = resp.json()["PropertyTable"]["Properties"][0]
+            smiles_list.append({
+                "pubchem_id": cid,
+                "canonical_smiles": props.get("CanonicalSMILES", ""),
+                "pref_name": props.get("Title", "")
+            })
+
+    pubchem_df = pd.DataFrame(smiles_list)
+    pubchem_df["source"] = "PubChem"
+    print(f"✅ Retrieved {len(pubchem_df)} compounds from PubChem.")
+except Exception as e:
+    print(f"⚠️ PubChem search failed: {e}")
+
+
+# ==================================================
+# 3️⃣ ZINC SEARCH
+# ==================================================
+print("\n🧩 Searching ZINC database for similar compounds...")
+zinc_url = f"https://zinc22.docking.org/api/substances/similar?smiles={query_smiles}&threshold=70"
+
+zinc_df = pd.DataFrame()
+try:
+    r = requests.get(zinc_url, timeout=20)
+    if r.status_code == 200 and "ZINC" in r.text:
+        lines = r.text.strip().split("\n")
+        zinc_records = [{"zinc_id": line.split()[0]} for line in lines if line.startswith("ZINC")]
+        zinc_df = pd.DataFrame(zinc_records)
+        zinc_df["source"] = "ZINC"
+        print(f"✅ Retrieved {len(zinc_df)} entries from ZINC.")
+    else:
+        print("⚠️ No ZINC results found or endpoint returned empty.")
+except Exception as e:
+    print(f"⚠️ ZINC search failed: {e}")
+
+# ==================================================
+# 4️⃣ COMBINE ALL RESULTS
+# ==================================================
+all_results = pd.concat([chembl_df, pubchem_df, zinc_df], ignore_index=True, sort=False)
+print(f"\n📊 Combined total: {len(all_results)} compounds from all databases.")
+
+# Save to file
+all_results.to_csv(OUT_FILE, index=False)
+print(f"💾 Results saved to: {OUT_FILE}")
