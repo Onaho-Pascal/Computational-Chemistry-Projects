@@ -1,3 +1,7 @@
+# ===============================================
+# MULTI-DATABASE MOLECULAR SEARCH PIPELINE
+# ===============================================
+
 from rdkit import Chem
 from chembl_webresource_client.new_client import new_client
 import pandas as pd
@@ -10,10 +14,12 @@ from tqdm import tqdm
 # ===============================
 sdf_file = "FPS_7U_657041 (3).sdf"
 IMAGE_DIR = "compound_images"
-OUT_FILE = "multi_db_results.csv"
+OUT_FILE = "multi_db_results_full2.csv"
 os.makedirs(IMAGE_DIR, exist_ok=True)
 
-# Extract SMILES
+SIMILARITY_THRESHOLD = 70
+
+# Extract SMILES from input SDF
 supplier = Chem.SDMolSupplier(sdf_file)
 query_smiles = None
 for mol in supplier:
@@ -22,47 +28,39 @@ for mol in supplier:
         break
 print(f"✅ Query SMILES: {query_smiles}")
 
-
 # ==================================================
 # 1️⃣ ChEMBL SEARCH
 # ==================================================
-print("\n🔍 Searching ChEMBL for similar and substructure compounds...")
+print("\n🔍 Searching ChEMBL...")
 similarity_search = new_client.similarity
 substructure_search = new_client.substructure
 
-similar_hits = similarity_search.filter(smiles=query_smiles, similarity=40) #.only(
-    #["molecule_chembl_id", "pref_name", "molecule_type", "canonical_smiles"]
+chembl_results = []
+try:
+    similar_hits = similarity_search.filter(smiles=query_smiles, similarity=SIMILARITY_THRESHOLD)
+    substructure_hits = substructure_search.filter(smiles=query_smiles)
+    chembl_results = list(similar_hits) + list(substructure_hits)
+except Exception as e:
+    print(f"⚠️ ChEMBL search failed: {e}")
 
-substructure_hits = substructure_search.filter(smiles=query_smiles) 
-#     ["molecule_chembl_id", "pref_name", "molecule_type", "canonical_smiles"]
+chembl_df = pd.DataFrame(chembl_results)
+if not chembl_df.empty and "molecule_chembl_id" in chembl_df.columns:
+    chembl_df = chembl_df.drop_duplicates(subset=["molecule_chembl_id"])
 
-chembl_results = list(similar_hits) + list(substructure_hits)
-
-chembl_df = pd.DataFrame(chembl_results).drop_duplicates(subset=["molecule_chembl_id"])
 chembl_df["source"] = "ChEMBL"
-print(f"✅ Retrieved {len(chembl_df)} unique compounds from ChEMBL.")
-print(chembl_df.head(10))
-print(chembl_df.columns)
-print(chembl_df.shape)
+print(f"✅ {len(chembl_df)} hits from ChEMBL.")
 
 
 # ==================================================
 # 2️⃣ PubChem SEARCH
 # ==================================================
-print("\n🧪 Searching PubChem for similar compounds...")
+print("\n🧪 Searching PubChem...")
 pubchem_df = pd.DataFrame()
-
 try:
-    # Step 1: Get list of similar compounds by SMILES
-    sim_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/similarity/smiles/{query_smiles}/cids/JSON?Threshold=70"
+    sim_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/similarity/smiles/{query_smiles}/cids/JSON?Threshold={SIMILARITY_THRESHOLD}"
     r = requests.get(sim_url, timeout=30)
-    r.raise_for_status()
     data = r.json()
-
     cids = data.get("IdentifierList", {}).get("CID", [])
-    print(f"Found {len(cids)} PubChem CIDs")
-
-    # Step 2: Fetch their SMILES
     smiles_list = []
     for cid in tqdm(cids[:50], desc="Fetching PubChem structures"):
         s_url = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/{cid}/property/CanonicalSMILES,Title/JSON"
@@ -74,40 +72,155 @@ try:
                 "canonical_smiles": props.get("CanonicalSMILES", ""),
                 "pref_name": props.get("Title", "")
             })
-
     pubchem_df = pd.DataFrame(smiles_list)
     pubchem_df["source"] = "PubChem"
-    print(f"✅ Retrieved {len(pubchem_df)} compounds from PubChem.")
 except Exception as e:
     print(f"⚠️ PubChem search failed: {e}")
+print(f"✅ {len(pubchem_df)} hits from PubChem.")
 
 
 # ==================================================
 # 3️⃣ ZINC SEARCH
 # ==================================================
-print("\n🧩 Searching ZINC database for similar compounds...")
-zinc_url = f"https://zinc22.docking.org/api/substances/similar?smiles={query_smiles}&threshold=70"
-
+print("\n🧩 Searching ZINC...")
 zinc_df = pd.DataFrame()
 try:
+    zinc_url = f"https://zinc22.docking.org/api/substances/similar?smiles={query_smiles}&threshold={SIMILARITY_THRESHOLD}"
     r = requests.get(zinc_url, timeout=20)
     if r.status_code == 200 and "ZINC" in r.text:
         lines = r.text.strip().split("\n")
         zinc_records = [{"zinc_id": line.split()[0]} for line in lines if line.startswith("ZINC")]
         zinc_df = pd.DataFrame(zinc_records)
         zinc_df["source"] = "ZINC"
-        print(f"✅ Retrieved {len(zinc_df)} entries from ZINC.")
-    else:
-        print("⚠️ No ZINC results found or endpoint returned empty.")
 except Exception as e:
     print(f"⚠️ ZINC search failed: {e}")
+print(f"✅ {len(zinc_df)} hits from ZINC.")
+
 
 # ==================================================
-# 4️⃣ COMBINE ALL RESULTS
+# 4️⃣ BindingDB SEARCH
 # ==================================================
-all_results = pd.concat([chembl_df, pubchem_df, zinc_df], ignore_index=True, sort=False)
+print("\n🧬 Searching BindingDB...")
+bindingdb_df = pd.DataFrame()
+try:
+    url = f"https://www.bindingdb.org/bind/chemsearch/marvin/SDFdownload.jsp?smiles={query_smiles}"
+    r = requests.get(url, timeout=20)
+    if r.status_code == 200 and len(r.content) > 100:
+        open("bindingdb_temp.sdf", "wb").write(r.content)
+        supplier = Chem.SDMolSupplier("bindingdb_temp.sdf")
+        smiles_list = []
+        for mol in supplier:
+            if mol:
+                smiles_list.append({"canonical_smiles": Chem.MolToSmiles(mol), "source": "BindingDB"})
+        bindingdb_df = pd.DataFrame(smiles_list)
+except Exception as e:
+    print(f"⚠️ BindingDB search failed: {e}")
+print(f"✅ {len(bindingdb_df)} hits from BindingDB.")
+
+
+# ==================================================
+# 5️⃣ DrugCentral SEARCH
+# ==================================================
+print("\n💊 Searching DrugCentral...")
+drugcentral_df = pd.DataFrame()
+try:
+    url = f"https://drugcentral.org/api/smiles/{query_smiles}"
+    r = requests.get(url, timeout=20)
+    if r.status_code == 200:
+        data = r.json()
+        if data:
+            drugcentral_df = pd.json_normalize(data)
+            drugcentral_df["source"] = "DrugCentral"
+except Exception as e:
+    print(f"⚠️ DrugCentral search failed: {e}")
+print(f"✅ {len(drugcentral_df)} hits from DrugCentral.")
+
+
+# ==================================================
+# 6️⃣ PDB Ligand Search
+# ==================================================
+print("\n🧩 Searching RCSB PDB...")
+pdb_df = pd.DataFrame()
+try:
+    query = {
+        "query": {
+            "type": "terminal",
+            "service": "chem-comp-similarity",
+            "parameters": {"value": query_smiles, "type": "descriptor", "cutoff": SIMILARITY_THRESHOLD}
+        },
+        "return_type": "entry"
+    }
+    r = requests.post("https://search.rcsb.org/rcsbsearch/v2/query", json=query)
+    if r.status_code == 200:
+        results = r.json().get("result_set", [])
+        pdb_df = pd.DataFrame([{"pdb_id": r["identifier"], "source": "PDB"} for r in results])
+except Exception as e:
+    print(f"⚠️ PDB search failed: {e}")
+print(f"✅ {len(pdb_df)} hits from PDB.")
+
+
+# ==================================================
+# 7️⃣ KEGG SEARCH
+# ==================================================
+print("\n🧫 Searching KEGG...")
+kegg_df = pd.DataFrame()
+try:
+    url = f"https://rest.kegg.jp/find/compound/{query_smiles}"
+    r = requests.get(url)
+    if r.status_code == 200 and r.text.strip():
+        entries = [{"kegg_id": line.split("\t")[0], "desc": line.split("\t")[1], "source": "KEGG"}
+                   for line in r.text.strip().split("\n")]
+        kegg_df = pd.DataFrame(entries)
+except Exception as e:
+    print(f"⚠️ KEGG search failed: {e}")
+print(f"✅ {len(kegg_df)} hits from KEGG.")
+
+
+# ==================================================
+# 8️⃣ NPASS Natural Products
+# ==================================================
+print("\n🌿 Searching NPASS...")
+npass_df = pd.DataFrame()
+try:
+    url = f"https://bidd.group/NPASS/api/api_search_similar.php?smiles={query_smiles}&threshold={SIMILARITY_THRESHOLD}"
+    r = requests.get(url, timeout=30)
+    if r.status_code == 200 and len(r.text) > 0:
+        try:
+            npass_df = pd.read_json(r.text)
+            npass_df["source"] = "NPASS"
+        except Exception:
+            pass
+except Exception as e:
+    print(f"⚠️ NPASS search failed: {e}")
+print(f"✅ {len(npass_df)} hits from NPASS.")
+
+
+# ==================================================
+# 9️⃣ COCONUT Natural Products
+# ==================================================
+print("\n🥥 Searching COCONUT...")
+coconut_df = pd.DataFrame()
+try:
+    url = f"https://coconut.naturalproducts.net/api/v1/similarity?smiles={query_smiles}&threshold={SIMILARITY_THRESHOLD}"
+    r = requests.get(url, timeout=30)
+    if r.status_code == 200:
+        coconut_df = pd.DataFrame(r.json())
+        coconut_df["source"] = "COCONUT"
+except Exception as e:
+    print(f"⚠️ COCONUT search failed: {e}")
+print(f"✅ {len(coconut_df)} hits from COCONUT.")
+
+
+# ==================================================
+# 🔟 Combine all results
+# ==================================================
+all_results = pd.concat([
+    chembl_df, pubchem_df, zinc_df, bindingdb_df,
+    drugcentral_df, pdb_df, kegg_df, npass_df, coconut_df
+], ignore_index=True, sort=False)
+
 print(f"\n📊 Combined total: {len(all_results)} compounds from all databases.")
-
-# Save to file
 all_results.to_csv(OUT_FILE, index=False)
 print(f"💾 Results saved to: {OUT_FILE}")
+
+print("\n✅ Multi-database compound search complete.")
