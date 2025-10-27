@@ -1,6 +1,6 @@
-# ===============================================
-# MULTI-DATABASE MOLECULAR SEARCH PIPELINE
-# ===============================================
+# # ===============================================
+# # MULTI-DATABASE MOLECULAR SEARCH PIPELINE
+# # ===============================================
 
 from rdkit import Chem
 from chembl_webresource_client.new_client import new_client
