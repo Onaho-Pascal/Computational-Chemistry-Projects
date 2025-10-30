@@ -1,4 +1,5 @@
 # Medicinal Compound Dataset Generation
+**Objective**: To generate and gather similar chemical compounds from databases using three different sample compounds as references.
 ## SMILES Extraction
 In order to search for compound similarity, the SMILES (Simplified Molecular Input Line Entry System) had to be extracted from the .SDF files containing the three different reference sample. 
 Tool used for extraction: RDKIT Package in Python
